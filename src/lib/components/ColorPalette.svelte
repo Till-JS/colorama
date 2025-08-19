@@ -2,9 +2,21 @@
 	import { canvasState } from '$lib/stores/canvas';
 
 	const presetColors = [
-		'#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF',
-		'#FFFF00', '#FF00FF', '#00FFFF', '#FFA500', '#800080',
-		'#FFC0CB', '#A52A2A', '#808080', '#C0C0C0', '#FFD700'
+		'#000000',
+		'#FFFFFF',
+		'#FF0000',
+		'#00FF00',
+		'#0000FF',
+		'#FFFF00',
+		'#FF00FF',
+		'#00FFFF',
+		'#FFA500',
+		'#800080',
+		'#FFC0CB',
+		'#A52A2A',
+		'#808080',
+		'#C0C0C0',
+		'#FFD700'
 	];
 
 	let customColor = $canvasState.color;
@@ -25,7 +37,7 @@
 		<h3>Colors</h3>
 		<div class="current-color" style="background-color: {$canvasState.color}"></div>
 	</div>
-	
+
 	<div class="preset-colors">
 		{#each presetColors as color}
 			<button
@@ -37,17 +49,12 @@
 			/>
 		{/each}
 	</div>
-	
+
 	<div class="custom-color">
 		<label for="color-picker">Custom:</label>
-		<input
-			id="color-picker"
-			type="color"
-			bind:value={customColor}
-			on:input={handleCustomColor}
-		/>
+		<input id="color-picker" type="color" bind:value={customColor} on:input={handleCustomColor} />
 	</div>
-	
+
 	<div class="opacity-control">
 		<label for="opacity">Opacity: {Math.round($canvasState.opacity * 100)}%</label>
 		<input
@@ -111,7 +118,9 @@
 
 	.color-btn.selected {
 		border-color: #333;
-		box-shadow: 0 0 0 2px white, 0 0 0 4px #333;
+		box-shadow:
+			0 0 0 2px white,
+			0 0 0 4px #333;
 	}
 
 	.custom-color,
@@ -128,7 +137,7 @@
 		flex: 1;
 	}
 
-	input[type="color"] {
+	input[type='color'] {
 		width: 3rem;
 		height: 2rem;
 		border: 1px solid #ccc;
@@ -136,7 +145,7 @@
 		cursor: pointer;
 	}
 
-	input[type="range"] {
+	input[type='range'] {
 		flex: 1;
 	}
 </style>

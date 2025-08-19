@@ -19,10 +19,10 @@ function createProjectStore() {
 
 	return {
 		subscribe,
-		setProject: (project: Partial<CurrentProject>) => update(state => ({ ...state, ...project })),
-		markModified: () => update(state => ({ ...state, modified: true })),
-		markSaved: () => update(state => ({ ...state, modified: false })),
-		
+		setProject: (project: Partial<CurrentProject>) => update((state) => ({ ...state, ...project })),
+		markModified: () => update((state) => ({ ...state, modified: true })),
+		markSaved: () => update((state) => ({ ...state, modified: false })),
+
 		async loadProject(id: number) {
 			const project = await db.projects.get(id);
 			if (project) {
@@ -36,7 +36,7 @@ function createProjectStore() {
 			}
 			return null;
 		},
-		
+
 		async saveProject(canvasData: string, settings: Record<string, any>) {
 			const state = get(projectStore);
 			if (state.id) {
@@ -62,15 +62,15 @@ function createProjectStore() {
 					canvasData,
 					settings
 				});
-				update(s => ({ ...s, id: projectId as number }));
+				update((s) => ({ ...s, id: projectId as number }));
 			}
-			update(s => ({ ...s, modified: false }));
+			update((s) => ({ ...s, modified: false }));
 		},
-		
+
 		async listProjects() {
 			return await db.projects.toArray();
 		},
-		
+
 		async deleteProject(id: number) {
 			await db.projects.delete(id);
 			await db.projectData.where('projectId').equals(id).delete();
@@ -81,8 +81,8 @@ function createProjectStore() {
 export const projectStore = createProjectStore();
 
 // Helper to get store value synchronously
-function get<T>(store: { subscribe: (fn: (value: T) => void) => () => void }) {
-	let value: T;
-	store.subscribe(v => value = v)();
+function get<T>(store: { subscribe: (fn: (value: T) => void) => () => void }): T {
+	let value!: T;
+	store.subscribe((v) => (value = v))();
 	return value;
 }

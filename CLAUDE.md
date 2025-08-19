@@ -29,6 +29,7 @@ pnpm preview                # Preview production build
 ## Architecture & Code Organization
 
 ### Tech Stack
+
 - **Frontend Framework**: SvelteKit 2.x with Svelte 5
 - **Styling**: TailwindCSS 4.x
 - **Internationalization**: Paraglide JS with Inlang (type-safe i18n)
@@ -58,6 +59,7 @@ pnpm preview                # Preview production build
 ### Planned Features (from ProjectPlan.md)
 
 The application will implement:
+
 - **Canvas API** with three drawing modes (Pixel, Free Draw, Mandala)
 - **Offline storage** using IndexedDB/Dexie.js
 - **PWA capabilities** with service workers
@@ -65,6 +67,7 @@ The application will implement:
 - **Optional cloud sync** with Supabase
 
 ### Code Style
+
 - Tabs for indentation
 - Single quotes for strings
 - 100 character line width
@@ -73,6 +76,7 @@ The application will implement:
 ## Development Workflow
 
 When implementing new features:
+
 1. Add translatable strings to `/messages/*.json` for all supported languages
 2. Place reusable components in `/src/lib/`
 3. Write unit tests alongside components (`*.spec.ts`)

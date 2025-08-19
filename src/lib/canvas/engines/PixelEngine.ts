@@ -4,7 +4,7 @@ import { canvasState } from '$lib/stores/canvas';
 
 export class PixelEngine extends BaseEngine {
 	private gridSize = 16;
-	private pixelSize: number;
+	private pixelSize: number = 32;
 	private gridCanvas: HTMLCanvasElement;
 	private gridCtx: CanvasRenderingContext2D;
 	private lastPixel: { x: number; y: number } | null = null;
@@ -15,10 +15,10 @@ export class PixelEngine extends BaseEngine {
 		const ctx = gridCanvas.getContext('2d');
 		if (!ctx) throw new Error('Could not get grid context');
 		this.gridCtx = ctx;
-		
+
 		// Disable image smoothing for pixel-perfect rendering
 		this.ctx.imageSmoothingEnabled = false;
-		
+
 		this.updateGridSize();
 		this.drawGrid();
 	}
@@ -30,7 +30,7 @@ export class PixelEngine extends BaseEngine {
 		this.canvas.addEventListener('touchstart', this.handleTouchStart);
 		this.canvas.addEventListener('touchmove', this.handleTouchMove);
 		this.canvas.addEventListener('touchend', this.handleTouchEnd);
-		
+
 		// Also handle mouse leave to stop drawing
 		this.canvas.addEventListener('mouseleave', this.handleMouseUp);
 	}
@@ -92,7 +92,7 @@ export class PixelEngine extends BaseEngine {
 	protected handleMove(x: number, y: number) {
 		const pixelX = Math.floor(x / this.pixelSize);
 		const pixelY = Math.floor(y / this.pixelSize);
-		
+
 		// Only draw if we moved to a different pixel
 		if (this.lastPixel && (this.lastPixel.x !== pixelX || this.lastPixel.y !== pixelY)) {
 			// Draw line between last and current pixel for smooth drawing
@@ -110,25 +110,15 @@ export class PixelEngine extends BaseEngine {
 
 	private drawPixel(x: number, y: number) {
 		if (x < 0 || x >= this.gridSize || y < 0 || y >= this.gridSize) return;
-		
+
 		const state = get(canvasState);
-		
+
 		if (state.tool === 'eraser') {
-			this.ctx.clearRect(
-				x * this.pixelSize,
-				y * this.pixelSize,
-				this.pixelSize,
-				this.pixelSize
-			);
+			this.ctx.clearRect(x * this.pixelSize, y * this.pixelSize, this.pixelSize, this.pixelSize);
 		} else {
 			this.ctx.fillStyle = state.color;
 			this.ctx.globalAlpha = state.opacity;
-			this.ctx.fillRect(
-				x * this.pixelSize,
-				y * this.pixelSize,
-				this.pixelSize,
-				this.pixelSize
-			);
+			this.ctx.fillRect(x * this.pixelSize, y * this.pixelSize, this.pixelSize, this.pixelSize);
 			this.ctx.globalAlpha = 1;
 		}
 	}
@@ -161,41 +151,49 @@ export class PixelEngine extends BaseEngine {
 		// Flood fill algorithm
 		const pixelX = Math.floor(startX / this.pixelSize);
 		const pixelY = Math.floor(startY / this.pixelSize);
-		
+
 		const imageData = this.ctx.getImageData(0, 0, this.width, this.height);
-		const targetColor = this.getPixelColor(imageData, pixelX * this.pixelSize, pixelY * this.pixelSize);
+		const targetColor = this.getPixelColor(
+			imageData,
+			pixelX * this.pixelSize,
+			pixelY * this.pixelSize
+		);
 		const state = get(canvasState);
 		const fillColor = this.hexToRgb(state.color);
-		
+
 		if (this.colorsMatch(targetColor, fillColor)) return;
-		
+
 		const stack = [[pixelX, pixelY]];
 		const visited = new Set<string>();
-		
+
 		while (stack.length > 0) {
 			const [x, y] = stack.pop()!;
 			const key = `${x},${y}`;
-			
+
 			if (visited.has(key) || x < 0 || x >= this.gridSize || y < 0 || y >= this.gridSize) {
 				continue;
 			}
-			
+
 			visited.add(key);
-			
+
 			const currentColor = this.getPixelColor(imageData, x * this.pixelSize, y * this.pixelSize);
 			if (!this.colorsMatch(currentColor, targetColor)) continue;
-			
+
 			this.drawPixel(x, y);
-			
+
 			stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
 		}
-		
+
 		// Save to history after fill
 		const newImageData = this.getImageData();
 		canvasState.addToHistory(newImageData);
 	}
 
-	private getPixelColor(imageData: ImageData, x: number, y: number): [number, number, number, number] {
+	private getPixelColor(
+		imageData: ImageData,
+		x: number,
+		y: number
+	): [number, number, number, number] {
 		const index = (y * imageData.width + x) * 4;
 		return [
 			imageData.data[index],
@@ -207,15 +205,15 @@ export class PixelEngine extends BaseEngine {
 
 	private hexToRgb(hex: string): [number, number, number, number] {
 		const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-		return result ? [
-			parseInt(result[1], 16),
-			parseInt(result[2], 16),
-			parseInt(result[3], 16),
-			255
-		] : [0, 0, 0, 255];
+		return result
+			? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16), 255]
+			: [0, 0, 0, 255];
 	}
 
-	private colorsMatch(c1: [number, number, number, number], c2: [number, number, number, number]): boolean {
+	private colorsMatch(
+		c1: [number, number, number, number],
+		c2: [number, number, number, number]
+	): boolean {
 		return c1[0] === c2[0] && c1[1] === c2[1] && c1[2] === c2[2] && c1[3] === c2[3];
 	}
 }

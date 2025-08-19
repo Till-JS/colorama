@@ -6,9 +6,9 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig({
 	plugins: [
 		sveltekit(),
-		paraglide({ 
-			project: './project.inlang', 
-			outdir: './src/lib/paraglide' 
+		paraglide({
+			project: './project.inlang',
+			outdir: './src/lib/paraglide'
 		}),
 		VitePWA({
 			registerType: 'autoUpdate',

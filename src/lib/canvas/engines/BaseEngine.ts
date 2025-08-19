@@ -12,7 +12,7 @@ export abstract class BaseEngine {
 		this.ctx = ctx;
 		this.width = canvas.width;
 		this.height = canvas.height;
-		
+
 		this.setupEventListeners();
 	}
 
@@ -24,13 +24,13 @@ export abstract class BaseEngine {
 	public resize(width: number, height: number) {
 		// Save current canvas content
 		const imageData = this.ctx.getImageData(0, 0, this.width, this.height);
-		
+
 		// Resize canvas
 		this.width = width;
 		this.height = height;
 		this.canvas.width = width;
 		this.canvas.height = height;
-		
+
 		// Restore content
 		this.ctx.putImageData(imageData, 0, 0);
 	}
@@ -49,7 +49,7 @@ export abstract class BaseEngine {
 
 	protected getCoordinates(event: MouseEvent | TouchEvent): { x: number; y: number } {
 		const rect = this.canvas.getBoundingClientRect();
-		
+
 		if (event instanceof MouseEvent) {
 			return {
 				x: event.clientX - rect.left,

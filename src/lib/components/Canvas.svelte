@@ -2,6 +2,8 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { canvasState } from '$lib/stores/canvas';
 	import { PixelEngine } from '$lib/canvas/engines/PixelEngine';
+	import { DrawEngine } from '$lib/canvas/engines/DrawEngine';
+	import { MandalaEngine } from '$lib/canvas/engines/MandalaEngine';
 	import type { BaseEngine } from '$lib/canvas/engines/BaseEngine';
 
 	let canvasContainer: HTMLDivElement;
@@ -13,6 +15,9 @@
 	$: if (engine && mode === 'pixel' && engine instanceof PixelEngine) {
 		engine.setGridSize($canvasState.gridSize);
 		engine.drawGrid();
+	}
+	$: if (engine && mode === 'mandala' && engine instanceof MandalaEngine) {
+		engine.setSegments($canvasState.symmetrySegments);
 	}
 
 	onMount(() => {
@@ -29,21 +34,36 @@
 
 	function initializeCanvas() {
 		const size = Math.min(canvasContainer.clientWidth, canvasContainer.clientHeight, 512);
-		
+
 		mainCanvas.width = size;
 		mainCanvas.height = size;
 		gridCanvas.width = size;
 		gridCanvas.height = size;
+
+		// Destroy previous engine if exists
+		if (engine) {
+			engine.destroy();
+		}
 
 		// Initialize engine based on mode
 		switch ($canvasState.mode) {
 			case 'pixel':
 				engine = new PixelEngine(mainCanvas, gridCanvas);
 				break;
-			// TODO: Add DrawEngine and MandalaEngine
+			case 'draw':
+				engine = new DrawEngine(mainCanvas);
+				break;
+			case 'mandala':
+				engine = new MandalaEngine(mainCanvas, gridCanvas);
+				break;
 			default:
 				engine = new PixelEngine(mainCanvas, gridCanvas);
 		}
+	}
+
+	// Reinitialize engine when mode changes
+	$: if (mode && mainCanvas && gridCanvas) {
+		initializeCanvas();
 	}
 
 	function handleResize() {
@@ -52,7 +72,7 @@
 		engine.resize(size, size);
 		gridCanvas.width = size;
 		gridCanvas.height = size;
-		
+
 		if (engine instanceof PixelEngine) {
 			engine.drawGrid();
 		}
@@ -102,16 +122,10 @@
 
 <div class="canvas-wrapper" bind:this={canvasContainer}>
 	<div class="canvas-stack">
-		<canvas
-			bind:this={mainCanvas}
-			class="main-canvas"
-		/>
-		<canvas
-			bind:this={gridCanvas}
-			class="grid-canvas"
-		/>
+		<canvas bind:this={mainCanvas} class="main-canvas" />
+		<canvas bind:this={gridCanvas} class="grid-canvas" />
 	</div>
-	
+
 	<div class="canvas-controls">
 		<button
 			on:click={handleUndo}
@@ -129,13 +143,7 @@
 		>
 			↷
 		</button>
-		<button
-			on:click={handleClear}
-			class="control-btn"
-			title="Clear Canvas"
-		>
-			Clear
-		</button>
+		<button on:click={handleClear} class="control-btn" title="Clear Canvas"> Clear </button>
 	</div>
 </div>
 

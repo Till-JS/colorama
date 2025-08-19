@@ -32,7 +32,7 @@
 			</button>
 		{/each}
 	</div>
-	
+
 	{#if $canvasState.mode === 'pixel'}
 		<div class="tool-settings">
 			<h4>Grid Settings</h4>
@@ -166,12 +166,12 @@
 		font-size: 0.875rem;
 	}
 
-	.setting-row input[type="range"],
+	.setting-row input[type='range'],
 	.setting-row select {
 		width: 100%;
 	}
 
-	.setting-row input[type="checkbox"] {
+	.setting-row input[type='checkbox'] {
 		margin-right: 0.5rem;
 	}
 </style>
