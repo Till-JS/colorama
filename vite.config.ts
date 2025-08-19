@@ -1,4 +1,3 @@
-import { paraglide } from '@inlang/paraglide-js-adapter-vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -6,10 +5,6 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig({
 	plugins: [
 		sveltekit(),
-		paraglide({
-			project: './project.inlang',
-			outdir: './src/lib/paraglide'
-		}),
 		VitePWA({
 			registerType: 'autoUpdate',
 			manifest: {
