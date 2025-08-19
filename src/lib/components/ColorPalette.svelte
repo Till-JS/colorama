@@ -1,25 +1,10 @@
 <script lang="ts">
 	import { canvasState } from '$lib/stores/canvas';
+	import { palettes, type ColorPalette } from '$lib/utils/palettes';
 
-	const presetColors = [
-		'#000000',
-		'#FFFFFF',
-		'#FF0000',
-		'#00FF00',
-		'#0000FF',
-		'#FFFF00',
-		'#FF00FF',
-		'#00FFFF',
-		'#FFA500',
-		'#800080',
-		'#FFC0CB',
-		'#A52A2A',
-		'#808080',
-		'#C0C0C0',
-		'#FFD700'
-	];
-
+	let selectedPalette = palettes[0];
 	let customColor = $canvasState.color;
+	let showPaletteMenu = false;
 
 	function selectColor(color: string) {
 		canvasState.setColor(color);
@@ -30,6 +15,15 @@
 		const target = e.target as HTMLInputElement;
 		selectColor(target.value);
 	}
+
+	function togglePaletteMenu() {
+		showPaletteMenu = !showPaletteMenu;
+	}
+
+	function selectPalette(palette: ColorPalette) {
+		selectedPalette = palette;
+		showPaletteMenu = false;
+	}
 </script>
 
 <div class="color-palette">
@@ -38,8 +32,37 @@
 		<div class="current-color" style="background-color: {$canvasState.color}"></div>
 	</div>
 
+	<div class="palette-selector">
+		<button class="palette-btn" on:click={togglePaletteMenu}>
+			🎨 {selectedPalette.name}
+			<span class="arrow">{showPaletteMenu ? '▲' : '▼'}</span>
+		</button>
+		
+		{#if showPaletteMenu}
+			<div class="palette-dropdown">
+				{#each palettes as palette}
+					<button 
+						class="palette-option" 
+						class:selected={selectedPalette.name === palette.name}
+						on:click={() => selectPalette(palette)}
+					>
+						<span class="palette-name">{palette.name}</span>
+						{#if palette.description}
+							<span class="palette-desc">{palette.description}</span>
+						{/if}
+						<div class="palette-preview">
+							{#each palette.colors.slice(0, 8) as color}
+								<span class="preview-color" style="background-color: {color}"></span>
+							{/each}
+						</div>
+					</button>
+				{/each}
+			</div>
+		{/if}
+	</div>
+
 	<div class="preset-colors">
-		{#each presetColors as color}
+		{#each selectedPalette.colors as color}
 			<button
 				class="color-btn"
 				class:selected={$canvasState.color === color}
@@ -135,6 +158,98 @@
 	.opacity-control label {
 		font-size: 0.875rem;
 		flex: 1;
+	}
+
+	.palette-selector {
+		position: relative;
+		margin-bottom: 1rem;
+	}
+
+	.palette-btn {
+		width: 100%;
+		padding: 0.5rem;
+		background: #f0f0f0;
+		border: 1px solid #ddd;
+		border-radius: 4px;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		font-size: 0.875rem;
+		transition: background 0.2s;
+	}
+
+	.palette-btn:hover {
+		background: #e0e0e0;
+	}
+
+	.palette-btn .arrow {
+		font-size: 0.75rem;
+		opacity: 0.6;
+	}
+
+	.palette-dropdown {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		right: 0;
+		background: white;
+		border: 1px solid #ddd;
+		border-radius: 4px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		max-height: 300px;
+		overflow-y: auto;
+		z-index: 100;
+		margin-top: 0.25rem;
+	}
+
+	.palette-option {
+		width: 100%;
+		padding: 0.75rem;
+		background: none;
+		border: none;
+		border-bottom: 1px solid #f0f0f0;
+		cursor: pointer;
+		text-align: left;
+		transition: background 0.2s;
+	}
+
+	.palette-option:last-child {
+		border-bottom: none;
+	}
+
+	.palette-option:hover {
+		background: #f8f8f8;
+	}
+
+	.palette-option.selected {
+		background: #e3f2fd;
+	}
+
+	.palette-name {
+		display: block;
+		font-weight: 500;
+		font-size: 0.875rem;
+		margin-bottom: 0.25rem;
+	}
+
+	.palette-desc {
+		display: block;
+		font-size: 0.75rem;
+		color: #666;
+		margin-bottom: 0.5rem;
+	}
+
+	.palette-preview {
+		display: flex;
+		gap: 2px;
+	}
+
+	.preview-color {
+		width: 16px;
+		height: 16px;
+		border-radius: 2px;
+		border: 1px solid rgba(0, 0, 0, 0.1);
 	}
 
 	input[type='color'] {

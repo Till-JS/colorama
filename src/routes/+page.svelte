@@ -19,6 +19,9 @@
 	<header class="hero">
 		<h1>🎨 Colorama</h1>
 		<p>Your offline-first creative playground</p>
+		<div class="hero-actions">
+			<a href="/gallery" class="btn-gallery">📁 My Gallery</a>
+		</div>
 	</header>
 
 	<ModeSelector />
@@ -65,6 +68,32 @@
 	.hero p {
 		font-size: 1.25rem;
 		opacity: 0.9;
+		margin-bottom: 1.5rem;
+	}
+
+	.hero-actions {
+		display: flex;
+		gap: 1rem;
+		justify-content: center;
+	}
+
+	.btn-gallery {
+		display: inline-block;
+		padding: 0.75rem 1.5rem;
+		background: rgba(255, 255, 255, 0.2);
+		color: white;
+		text-decoration: none;
+		border-radius: 8px;
+		font-weight: 500;
+		transition: all 0.3s;
+		backdrop-filter: blur(10px);
+		border: 1px solid rgba(255, 255, 255, 0.3);
+	}
+
+	.btn-gallery:hover {
+		background: rgba(255, 255, 255, 0.3);
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 	}
 
 	.recent-projects {
